@@ -1,6 +1,7 @@
 <script>
 	import { student_function_s, csv_data_s} from '$lib/stores.js';
 	import { grades_store_2 , grading_system_name_s} from '$lib/stores.js';
+	import {GradingSystemD} from '$lib/js/Grade.js';
 	import { get } from 'svelte/store';
 
 	import ButtonC from '$lib/utils/ButtonC.svelte';
@@ -18,20 +19,45 @@
 	{
 		student_output +=(s + "\r"); 
 	}
-	const grade = (s) =>
+
+
+	/*
+	Inject functions with names as the grading system
+	https://stackoverflow.com/questions/584907/javascript-better-way-to-add-dynamic-methods
+
+	*/
+	function addMethods(object, methods) {
+  for (var name in methods) {
+    object[name] = methods[name];
+  }
+};
+	class Grading
 	{
-		student_output +=(s + "\r"); 
+		constructor()
+		{
+			var methods = {}
+			$grades_store_2.forEach((value,key,map) =>{
+				console.log(JSON.stringify(value) +" "+ key)
+				methods[key]=function(_points){
+					return GradingSystemD.grade(value,_points)
+				}
+
+			});
+			addMethods(this,methods)
+		}
 	}
+	const grading = new Grading()
 	const parse = () =>
 	{
 		student_output = ""
-		let code_to_run = `(student, show, grade)=>{` + student_function + `}`;
+		let code_to_run = `(student, show, grading)=>{` + student_function + `}`;
 
 		let a = new Function('return' + code_to_run)
+		console.log("code_to_run")
 		console.log(JSON.stringify(code_to_run))
 		for(let i =0;i< $csv_data_s.length;i++)
 		{
-			a()($csv_data_s[i], show, grade)
+			a()($csv_data_s[i], show, grading)
 		}
 		$student_function_s = student_function
 	}

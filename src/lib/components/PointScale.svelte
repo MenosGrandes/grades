@@ -1,4 +1,7 @@
 <script>
+	/*
+Load data from STORE if available!
+	*/
 	import { grades_s, grades_store_2 } from '$lib/stores.js';
 	import { GradeD, GradesD } from '$lib/js/Grade.js';
 	import { saveObjectToJsonFile, loadObjectFromFile } from '$lib/js/FileUtils.js';
@@ -19,24 +22,26 @@
 		});
 	};
 
-	let min_perc;
-	let max_perc;
+	let min_perc=0;
+	let max_perc=100;
 	let grade;
-	let name = 'example_name';
-	let grades = $grades_s?.name ? $grades_s.copy() : new GradesD('example', []);
+
+	let grades = $grades_s?.name ? $grades_s.copy() : new GradesD('example', [], 0);
+	let name = $grades_s?.name ? $grades_s.name : 'example_name';
+	let max_points= $grades_s?.max_points ? $grades_s.max_points: 0;
 
 	let selected_grades = filter_selected_grades(basic_grades);
 
 	let files;
 	const resetGrades = () => {
-		grades = new GradesD('example', []);
+		grades = new GradesD('example', [],0);
 		selected_grades = basic_grades;
-		console.log($grades_store_2)
 	};
 	const saveAndValidateGrades = () => {
 		//MenosGrandes.. it can be done as additional feature. For now it will not validate the grade system itself
 
 		grades.name = name;
+		grades.max_points = max_points
 		grades = grades;
 		saveObjectToJsonFile(grades, name + 'grades.json');
 	};
@@ -53,6 +58,7 @@ Svelte will trigger renrendering of component only on assignment change!
 			*/
 		grades.addGrade(new GradeD(min_perc, max_perc, grade));
 		grades.name = name;
+		grades.max_points = max_points
 		grades.grades.sort((a, b) => {
 			return a.grade - b.grade;
 		});
@@ -72,7 +78,7 @@ Svelte will trigger renrendering of component only on assignment change!
 		const process_file_promise = loadObjectFromFile(files[0]);
 		process_file_promise.then((grades_from_json) => {
 			const _tmp = JSON.parse(grades_from_json);
-			const _grades = new GradesD(_tmp.name, []);
+			const _grades = new GradesD(_tmp.name, [], _tmp.max_points);
 			for (let i = 0; i < _tmp.grades.length; i++) {
 				_grades.addGrade(
 					new GradeD(_tmp.grades[i].min_perc, _tmp.grades[i].max_perc, _tmp.grades[i].grade)
@@ -98,18 +104,22 @@ Svelte will trigger renrendering of component only on assignment change!
 			grades_s.set(grades.copy());
 			//grades_store_2.update({grades : grades.copy(), name : grades.name});
 			grades_store_2.update((items)=>{
-				console.log(items)
-				items.set(grades.name, grades.copy())
+				items.set(grades.name.toString(), grades.copy()) // MenosGrandes... there is something wrong in here. Its an array and it should be GradesD
 				return items
 			});
+			max_points = grades.max_points;
+			name  = grades.name;
 		});
 	}
 </script>
 
 <div>
 	<div class="flex_container">
-		<p class="flex_item">Name</p>
-		<input bind:value={name} class="flex_item" />
+		<label class="flex_item" for="name">Name</label>
+		<input id="name" bind:value={name} class="flex_item" />
+
+		<label class="flex_item" for="max_points">MaxPoints</label>
+		<input id="max_points" bind:value={max_points} class="flex_item" type="number" min="1" />
 	</div>
 
 	<div class="flex_container">
@@ -154,6 +164,7 @@ Svelte will trigger renrendering of component only on assignment change!
 	.flex_container {
 		display: flex;
 		justify-content: space-around;
+		gap: 20px;
 	}
 	.flex_item {
 		font-weight: bold;
