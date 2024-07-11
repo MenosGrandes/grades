@@ -2,8 +2,11 @@
 	export let header;
 </script>
 
-	<p>{header}</p>
+	<li>{header}</li>
 
 <style>
+	p{
+	background-color: red;
+	}
 	/* styles go here */
 </style>

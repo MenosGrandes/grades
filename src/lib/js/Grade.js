@@ -43,10 +43,7 @@ class GradesD {
  * 100 - maxPoints
  * */
 const calcPerc = (_points, _maxPoints) => {
-  console.log("points" + _points);
-  console.log("max_points" + _maxPoints);
   const _v = (100 * _points) / _maxPoints;
-  console.log(_v);
   return _v;
 };
 class GradingSystemD {

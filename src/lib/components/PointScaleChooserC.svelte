@@ -6,25 +6,17 @@
 		return Array.from($grades_store_2.keys())
 	}
 	const grades = get_names()
-
-	const onChange = () =>
-	{
-		$grading_system_name_s = current_gradeing_system
-
-	}
 </script>
 
 <style>
 	/* your styles go here */
 </style>
 
-<!-- markup (zero or more items) goes here -->
-
 <div>
-	<label> PICK GRADING SYSTEM!</label>
-	<select bind:value={current_gradeing_system} on:change={()=>onChange()} >
+	<label>Available grading systems! <label>
+	<select >
 			{#each grades as selected_grade}
-				<option value={selected_grade}> {selected_grade} </option>
+				<option> {selected_grade} </option>
 			{/each}
 		</select>
 	</div>
