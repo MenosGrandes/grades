@@ -2,9 +2,7 @@
 	export let header;
 </script>
 
-<div>
-	<p>{JSON.stringify(header)}</p>
-</div>
+	<p>{header}</p>
 
 <style>
 	/* styles go here */

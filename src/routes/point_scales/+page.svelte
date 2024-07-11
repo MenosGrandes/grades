@@ -1,5 +1,4 @@
 <script>
-	import { csv_headers_s } from '$lib/stores.js';
 	import GradeRule from '$lib/components/GradeRule.svelte';
 	import PointScale from '$lib/components/PointScale.svelte';
 </script>

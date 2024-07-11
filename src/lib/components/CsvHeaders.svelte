@@ -1,14 +1,11 @@
 <script>
-	import { csv_headers_s } from '$lib/stores.js';
 	import Header from './Header.svelte';
-	// logic goes here
+	export let header_data;
 </script>
 
-<div>
-	{#each $csv_headers_s as header}
-		<Header {header} />
+	{#each header_data as _header}
+		<Header header={_header} />
 	{/each}
-</div>
 
 <style>
 	/* styles go here */

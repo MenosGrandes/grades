@@ -1,5 +1,5 @@
 <script>
-	import { grades_s } from '$lib/stores.js';
+	import { grades_s, grades_store_2 } from '$lib/stores.js';
 	import { GradeD, GradesD } from '$lib/js/Grade.js';
 	import { saveObjectToJsonFile, loadObjectFromFile } from '$lib/js/FileUtils.js';
 	import GradeC from '$lib/components/GradeC.svelte';
@@ -31,6 +31,7 @@
 	const resetGrades = () => {
 		grades = new GradesD('example', []);
 		selected_grades = basic_grades;
+		console.log($grades_store_2)
 	};
 	const saveAndValidateGrades = () => {
 		//MenosGrandes.. it can be done as additional feature. For now it will not validate the grade system itself
@@ -95,6 +96,12 @@ Svelte will trigger renrendering of component only on assignment change!
 			});
 
 			grades_s.set(grades.copy());
+			//grades_store_2.update({grades : grades.copy(), name : grades.name});
+			grades_store_2.update((items)=>{
+				console.log(items)
+				items.set(grades.name, grades.copy())
+				return items
+			});
 		});
 	}
 </script>
@@ -135,7 +142,7 @@ Svelte will trigger renrendering of component only on assignment change!
 
 	<div class="flex_container">
 		<ButtonC name={'SaveGrade'} onClickHandler={() => saveAndValidateGrades()} />
-		<ButtonC name={'CleanGrades'} onClickHandler={() => resetGrades()} />
+		<ButtonC name={'ResetGrades'} onClickHandler={() => resetGrades()} />
 
 		<input type="file" bind:files accept=".json" />
 	</div>

@@ -1,15 +1,18 @@
 <script>
-	import { grades_s, csv_headers_s } from '$lib/stores.js';
+	import { csv_data_s } from '$lib/stores.js';
 
-	import process_csv from '$lib/js/CsvProcessor.js';
+	import {get_headers_from_csv} from '$lib/js/CsvProcessor.js';
+
+	import {process_csv} from '$lib/js/CsvProcessor.js';
 	import Papa from 'papaparse';
 	import CsvHeaders from '$lib/components/CsvHeaders.svelte';
 
 	let files;
 	let csv;
-	$: if (csv_headers_s) {
+	let refresh = false
+	$: if (csv_data_s) {
 		//MenosGrandes here should I store full csv?
-		csv = $csv_headers_s;
+		csv = $csv_data_s;
 	}
 	$: if (files) {
 		const process_csv_promise = process_csv(files[0]);
@@ -17,12 +20,10 @@
 			Papa.parse(file, {
 				dynamicTyping: true,
 				header: true,
-				transformHeader: function (header, index) {
-					return header;
-				},
 				complete: function (results) {
 					csv = results.data;
-					$csv_headers_s = csv;
+					$csv_data_s = csv;
+					refresh = !refresh
 				}
 			});
 		});
@@ -31,14 +32,11 @@
 
 <div>
 	<input type="file" bind:files accept=".csv" />
-	{#if csv}
-		<CsvHeaders />
-	{/if}
-	{#if $grades_s?.name}
-		{#each $grades_s.grades as item}
-			<div>{item.grade}</div>
-		{/each}
-		<!-- content here -->
+	{#if csv.length}
+		{#key refresh}
+			<CsvHeaders header_data={get_headers_from_csv($csv_data_s[0])} />
+	
+		{/key}
 	{/if}
 </div>
 

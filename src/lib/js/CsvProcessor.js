@@ -1,4 +1,4 @@
-export default function process_csv(csv_file) {
+function process_csv(csv_file) {
 	/*
 		"First Name","Last Name","Email Address","Resit exam (Object oriented programming in javascript)","Points","Feedback","second graded test","Points","Feedback","RETAKE - First Graded Test!","Points","Feedback","First Graded Test!","Points","Feedback","Project","Points","Feedback"
 		This is example of CSV Header in MSTeams export of grades..
@@ -17,8 +17,9 @@ export default function process_csv(csv_file) {
 				let _header = header
 					.split(' ')
 					.join('_')
-					.replace(/"|!|-|/g, '')
+					.replace(/"|!|-|\.|/g, '')
 					.replace(/\(|\)/g, '')
+					.replace(/\[|\]/g, '')
 					.split(',');
 				for (let i = 3; i < _header.length; i += 3) {
 					_header[i] = _header[i].concat('__').concat("POINTS");
@@ -34,3 +35,16 @@ export default function process_csv(csv_file) {
 	};
 	return getData();
 }
+/*
+	* csv - assume that this is an object like Json.
+	* */
+function get_headers_from_csv(csv)
+{
+	return Object.keys(csv)
+}
+
+function get_values_from_csv(csv)
+{
+	return Object.values(csv)
+}
+export {process_csv, get_headers_from_csv, get_values_from_csv};
